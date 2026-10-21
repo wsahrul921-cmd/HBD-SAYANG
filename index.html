@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <!-- Mengambil font elegan dari Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================================
+           PENGATURAN WARNA, LATAR & ANIMASI BINTANG
+           ========================================= */
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1c1520 0%, #2a1f2e 100%); /* Tema dark aesthetic (ungu/coklat gelap) */
+            color: #fdfbf7; 
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden; 
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Container untuk efek bintang */
+        #stars-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle infinite alternate;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 5px white; }
+        }
+
+        /* =========================================
+           PENGATURAN LAYAR & TRANSISI HALAMAN
+           ========================================= */
+        .screen-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .screen {
+            display: none; 
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 90%;
+            max-width: 800px;
+            animation: fadeIn 1.5s ease-in-out;
+            padding: 20px;
+        }
+
+        .screen.active {
+            display: flex; 
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* =========================================
+           TIPOGRAFI & TOMBOL
+           ========================================= */
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            margin: 10px 0;
+        }
+        
+        .title-italic {
+            font-style: italic;
+            font-size: 3rem;
+            margin-bottom: 0;
+        }
+
+        .title-regular {
+            font-size: 2.5rem;
+            margin-top: 0;
+        }
+
+        .subtitle { 
+            font-size: 11px; 
+            letter-spacing: 4px; 
+            text-transform: uppercase; 
+            margin-bottom: 10px; 
+            opacity: 0.8;
+        }
+
+        .small-text {
+            font-size: 13px;
+            opacity: 0.7;
+            margin-top: 10px;
+        }
+
+        button {
+            background: transparent;
+            color: #fdfbf7;
+            border: 1px solid rgba(253, 251, 247, 0.4);
+            padding: 12px 28px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px;
+            letter-spacing: 2px;
+            border-radius: 30px;
+            margin-top: 35px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background: rgba(253, 251, 247, 0.15);
+            border-color: #fdfbf7;
+        }
+
+        /* =========================================
+           KUSTOMISASI TIAP HALAMAN
+           ========================================= */
+        /* Halaman 1: Countdown */
+        .timer-container { display: flex; gap: 15px; margin-top: 25px; }
+        .time-box { background: rgba(255,255,255,0.03); padding: 20px 15px; border-radius: 12px; min-width: 65px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 4px 15px rgba(0,0,0,0.2);}
+        .time-box span { font-size: 2.5rem; font-family: 'Playfair Display', serif; display: block; line-height: 1; }
+        .time-box p { margin: 8px 0 0 0; font-size: 10px; opacity: 0.6; letter-spacing: 2px;}
+
+        /* Halaman 2: Kotak Kado */
+        .gift-icon { font-size: 5rem; margin: 20px 0; animation: bounce 2s infinite ease-in-out; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        /* Halaman 4 & 7: Surat & Harapan */
+        .letter-box { background: rgba(255,255,255,0.04); padding: 35px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.08); margin-top: 20px; text-align: left; max-height: 55vh; overflow-y: auto; font-size: 14px; line-height: 1.9; text-align: justify; box-shadow: 0 4px 20px rgba(0,0,0,0.15);}
+        /* Custom Scrollbar untuk kotak surat */
+        .letter-box::-webkit-scrollbar { width: 5px; }
+        .letter-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
+
+        /* Halaman 5: Galeri Polaroid */
+        .gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 25px; max-width: 600px;}
+        .polaroid { background: #fdfbf7; padding: 10px 10px 35px 10px; border-radius: 3px; box-shadow: 0 5px 15px rgba(0,0,0,0.4); width: 110px; transition: transform 0.3s;}
+        .polaroid:hover { transform: scale(1.05); z-index: 10; }
+        .polaroid:nth-child(1) { transform: rotate(-4deg); }
+        .polaroid:nth-child(2) { transform: rotate(3deg); }
+        .polaroid:nth-child(3) { transform: rotate(-2deg); }
+        .polaroid:nth-child(4) { transform: rotate(5deg); }
+        .polaroid:nth-child(5) { transform: rotate(-5deg); }
+        .polaroid:nth-child(6) { transform: rotate(2deg); }
+        .polaroid img { width: 100%; height: 110px; object-fit: cover; border-radius: 2px;}
+
+        /* Halaman 6: Video */
+        .video-container { width: 100%; max-width: 500px; margin-top: 25px; border: 2px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.3);}
+        video { width: 100%; display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- Latar Belakang Bintang -->
+    <div id="stars-container"></div>
+
+    <div class="screen-container">
+
+        <!-- ==========================================
+             HALAMAN 1: COUNTDOWN
+             ========================================== -->
+        <div id="screen1" class="screen active">
+            <p class="subtitle">✨ MENGHITUNG HARI ✨</p>
+            <h1 class="title-italic">Her Special Day</h1>
+            <h1 class="title-regular">is Coming</h1>
+            <p class="small-text">Sesuatu yang indah sedang menunggu untukmu 🤍</p>
+            
+            <div class="timer-container">
+                <div class="time-box"><span id="hari">00</span><p>HARI</p></div>
+                <div class="time-box"><span id="jam">00</span><p>JAM</p></div>
+                <div class="time-box"><span id="menit">00</span><p>MENIT</p></div>
+                <div class="time-box"><span id="detik">00</span><p>DETIK</p></div>
+            </div>
+
+            <button id="btnCountdown" onclick="nextScreen('screen1', 'screen2')">TUNGGU SAMPAI WAKTUNYA ⏳</button>
+        </div>
+
+        <!-- ==========================================
+             HALAMAN 2: KOTAK KADO
+             ========================================== -->
+        <div id="screen2" class="screen">
+            <p class="subtitle">✨ ADA SESUATU UNTUKMU ✨</p>
+            <div class="gift-icon">🎁</div>
+            <p class="small-text">Klik untuk membuka kadomu hari ini</p>
+            <button onclick="nextScreen('screen2', 'screen3')">OPEN HER GIFT ➔</button>
+        </div>
+
+        <!-- ==========================================
+             HALAMAN 3: INTRO SURAT
+             ========================================== -->
+        <div id="screen3" class="screen">
+            <p class="subtitle">✨ A LOVE LETTER FOR YOU ✨</p>
+            <h1 class="title-regular" style="font-size: 3.5rem;">Your<br>Special Day</h1>
+            <p class="small-text">Created with love, just for you</p>
+            <button onclick="nextScreen('screen3', 'screen4')">READ MY LETTER 💌</button>
+        </div>
+
+        <!-- ==========================================
+             HALAMAN 4: ISI SURAT
+             ========================================== -->
+        <div id="screen4" class="screen">
+            <h1 class="title-regular" style="font-size: 2rem;">Happy Birthday</h1>
+            
+            <div class="letter-box">
+                <b>HAPPY BIRTHDAY SAYANGKUU 🤍</b><br><br>
+                Selamat ulang tahun yaa cintaa! Hari ini hari yang spesial banget karena hari ini adalah hari lahir orang yang paling berarti di hidupku.<br><br>
+                Terima kasih udah selalu ada, udah bikin hari-hariku lebih bahagia, dan udah menjadi alasan aku tersenyum setiap hari. Aku bersyukur banget bisa kenal dan punya ayang sampai sekarang.<br><br>
+                Di umur yang baru ini, aku cuma mau doain semoga semua hal baik selalu datang ke hidup ayang. Semoga sehat selalu, panjang umur, dimudahkan segala urusannya, dan semua impian ayang bisa tercapai satu per satu.<br><br>
+                Tetap jadi pribadi yang baik hati, dan hebat seperti sekarang ya. Jangan lupa kalau aku selalu ada buat ayang dalam keadaan apa pun.<br><br>
+                Sekali lagi, selamat ulang tahun sayangku. Semoga hari ini penuh kebahagiaan dan tahun ini menjadi tahun terbaik untukmu.<br><br>
+                I love you, today, tomorrow, and always. 🤍
+            </div>
+
+            <button onclick="nextScreen('screen4', 'screen5')">OUR MEMORIES ➔</button>
+        </div>
+
+        <!-- ==========================================
+             HALAMAN 5: GALERI FOTO POLAROID
+             ========================================== -->
+        <div id="screen5" class="screen">
+            <h1 class="title-italic" style="font-size: 2.5rem;">Our Memories</h1>
+            <p class="small-text">✨ every moment captured in love ✨</p>
+            
+            <div class="gallery">
+                <!-- Ganti link gambar di dalam src="" dengan foto-foto kalian -->
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=400&auto=format&fit=crop" alt="Foto 1"></div>
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=400&auto=format&fit=crop" alt="Foto 2"></div>
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1516589178581-6cd7853d4002?q=80&w=400&auto=format&fit=crop" alt="Foto 3"></div>
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1494774157365-9e04c6720e47?q=80&w=400&auto=format&fit=crop" alt="Foto 4"></div>
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=400&auto=format&fit=crop" alt="Foto 5"></div>
+                <div class="polaroid"><img src="https://images.unsplash.com/photo-1606277688001-ce11e3eba415?q=80&w=400&auto=format&fit=crop" alt="Foto 6"></div>
+            </div>
+
+            <button onclick="nextScreen('screen5', 'screen6')">WATCH VIDEO 🎥</button>
+        </div>
+
+        <!-- ==========================================
+             HALAMAN 6: PESAN VIDEO
+             ========================================== -->
+        <div id="screen6" class="screen">
+            <h1 class="title-regular" style="font-size: 2.5rem;">A Moment For You</h1>
+            <p class="small-text">✨ a special video message ✨</p>
+            
+            <div class="video-container">
+                <!-- Ganti link video di bawah dengan video kalian -->
+                <video controls>
+                    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                    Video tidak didukung.
+                </video>
+            </div>
+            
+            <button onclick="nextScreen('screen6', 'screen7')">BIRTHDAY WISHES ➔</button>
+        </div>
+
+        <!-- ==========================================
+             HALAMAN 7: HARAPAN TAMBAHAN
+             ========================================== -->
+        <div id="screen7" class="screen">
+            <h1 class="title-italic" style="font-size: 2.5rem;">Birthday Wishes</h1>
+            
+            <div class="letter-box" style="text-align: center;">
+                Happy Birthday, my love 🤍<br><br>
+                I wish you happiness, good health, success, and endless blessings in this new chapter of your life. May all your dreams come true, your days be filled with joy, and your heart always find peace. Thank you for being such a wonderful part of my life. I hope this year brings you everything you've been wishing for. Stay happy, stay healthy, and keep shining. I love you always. 🤍
+            </div>
+
+            <button onclick="nextScreen('screen7', 'screen8')">ONE MORE THING ➔</button>
+        </div>
+
+        <!-- ==========================================
+             HALAMAN 8: PENUTUP
+             ========================================== -->
+        <div id="screen8" class="screen">
+            <h1 class="title-regular" style="font-size: 3rem; margin-bottom: 20px;">Happy<br>Birthday</h1>
+            <p class="small-text">Thank you for being part of my life.</p>
+            <p class="small-text">I hope this little gift can make your special day even more beautiful.</p>
+            <h3 style="margin-top: 40px; font-style: italic; font-size: 1.5rem;">Forever yours. 🤍</h3>
+            
+            <button onclick="location.reload()">REPLAY FROM START ↺</button>
+        </div>
+
+    </div>
+
+    <!-- =======================================================
+         JAVASCRIPT LOGIC
+         ======================================================= -->
+    <script>
+        // 1. Fungsi untuk pindah halaman
+        function nextScreen(currentId, nextId) {
+            document.getElementById(currentId).classList.remove('active');
+            document.getElementById(nextId).classList.add('active');
+        }
+
+        // 2. Fungsi untuk membuat animasi bintang-bintang di background
+        function createStars() {
+            const container = document.getElementById('stars-container');
+            const numStars = 80; // Jumlah bintang
+            
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // Posisi acak
+                const xy = [Math.random() * 100, Math.random() * 100];
+                star.style.left = xy[0] + '%';
+                star.style.top = xy[1] + '%';
+                
+                // Ukuran acak
+                const size = Math.random() * 3 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                
+                // Durasi animasi acak
+                const duration = Math.random() * 2 + 1;
+                star.style.animationDuration = duration + 's';
+                
+                container.appendChild(star);
+            }
+        }
+        createStars();
+
+        // 3. Pengaturan Countdown
+        // UBAH TANGGAL DI BAWAH INI (Bulan Tanggal, Tahun Jam:Menit:Detik)
+        // Saat ini diatur ke 10 detik dari waktu dibuka agar kamu bisa langsung mencoba tombolnya
+        let countDownDate = new Date().getTime() + 10000; 
+        
+        /* 
+           JIKA INGIN MENGGUNAKAN TANGGAL ASLI, HAPUS TANDA "//" DI BAWAH INI
+           DAN GANTI TANGGALNYA:
+        */
+        // countDownDate = new Date("Nov 15, 2026 00:00:00").getTime();
+
+        const x = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = countDownDate - now;
+
+            if (distance > 0) {
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById("hari").innerHTML = days < 10 ? "0" + days : days;
+                document.getElementById("jam").innerHTML = hours < 10 ? "0" + hours : hours;
+                document.getElementById("menit").innerHTML = minutes < 10 ? "0" + minutes : minutes;
+                document.getElementById("detik").innerHTML = seconds < 10 ? "0" + seconds : seconds;
+                
+                document.getElementById("btnCountdown").innerHTML = "TUNGGU WAKTUNYA ⏳";
+                document.getElementById("btnCountdown").style.pointerEvents = "none"; // Tombol tidak bisa diklik sebelum waktunya
+                document.getElementById("btnCountdown").style.opacity = "0.5";
+            } else {
+                clearInterval(x);
+                document.getElementById("hari").innerHTML = "00";
+                document.getElementById("jam").innerHTML = "00";
+                document.getElementById("menit").innerHTML = "00";
+                document.getElementById("detik").innerHTML = "00";
+                
+                // Tombol berubah saat waktu habis
+                const btn = document.getElementById("btnCountdown");
+                btn.innerHTML = "OPEN HER GIFT 🎁";
+                btn.style.pointerEvents = "auto";
+                btn.style.opacity = "1";
+            }
+        }, 1000);
+    </script>
+
+</body>
+  </html>
+          
